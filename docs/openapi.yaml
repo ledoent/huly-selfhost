@@ -22,8 +22,8 @@ info:
     url: https://www.eclipse.org/legal/epl-2.0/
 
 servers:
-  - url: https://huly.example.com
-    description: Your Huly instance (replace with actual host)
+  - url: https://huly.hz.ledoweb.com
+    description: Ledo Huly instance
 
 security:
   - bearerAuth: []
