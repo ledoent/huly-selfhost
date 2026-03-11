@@ -1,6 +1,6 @@
 import Koa from 'koa'
 import bodyParser from 'koa-bodyparser'
-import Router from 'koa-router'
+import Router from '@koa/router'
 import jwt from 'jwt-simple'
 import { Pool } from 'pg'
 import crypto from 'node:crypto'
@@ -18,7 +18,7 @@ const pool = new Pool({ connectionString: DB_URL })
 
 async function ensureTable(): Promise<void> {
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS api_tokens (
+    CREATE TABLE IF NOT EXISTS global_account.api_tokens (
       id         TEXT PRIMARY KEY,
       email      TEXT NOT NULL,
       workspace  TEXT NOT NULL,
@@ -35,7 +35,8 @@ async function ensureTable(): Promise<void> {
 
 async function lookupAccountUuid(email: string): Promise<string | null> {
   const res = await pool.query(
-    `SELECT p.uuid FROM social_id si JOIN person p ON si."personUuid" = p.uuid
+    `SELECT p.uuid FROM global_account.social_id si
+     JOIN global_account.person p ON si.person_uuid = p.uuid
      WHERE si.value = $1 AND si.type = 'email' LIMIT 1`,
     [email]
   )
@@ -44,7 +45,7 @@ async function lookupAccountUuid(email: string): Promise<string | null> {
 
 async function lookupWorkspaceUuid(slug: string): Promise<string | null> {
   const res = await pool.query(
-    `SELECT uuid FROM workspace WHERE url = $1 LIMIT 1`,
+    `SELECT uuid FROM global_account.workspace WHERE url = $1 LIMIT 1`,
     [slug]
   )
   return res.rows[0]?.uuid ?? null
@@ -123,7 +124,7 @@ router.post('/tokens', requireServerSecret, async (ctx) => {
 
   const id = crypto.randomUUID()
   await pool.query(
-    `INSERT INTO api_tokens (id, email, workspace, account_uuid, workspace_uuid, expires_at)
+    `INSERT INTO global_account.api_tokens (id, email, workspace, account_uuid, workspace_uuid, expires_at)
      VALUES ($1, $2, $3, $4, $5, $6)`,
     [id, email, workspace, accountUuid, workspaceUuid, expiresAt]
   )
@@ -135,7 +136,7 @@ router.post('/tokens', requireServerSecret, async (ctx) => {
 router.get('/tokens', requireServerSecret, async (ctx) => {
   const res = await pool.query(
     `SELECT id, email, workspace, created_at, expires_at, revoked
-     FROM api_tokens ORDER BY created_at DESC`
+     FROM global_account.api_tokens ORDER BY created_at DESC`
   )
   ctx.body = res.rows
 })
@@ -144,7 +145,7 @@ router.get('/tokens', requireServerSecret, async (ctx) => {
 router.delete('/tokens/:id', requireServerSecret, async (ctx) => {
   const { id } = ctx.params
   const res = await pool.query(
-    `UPDATE api_tokens SET revoked = true WHERE id = $1 RETURNING id`,
+    `UPDATE global_account.api_tokens SET revoked = true WHERE id = $1 RETURNING id`,
     [id]
   )
   if (res.rowCount === 0) {

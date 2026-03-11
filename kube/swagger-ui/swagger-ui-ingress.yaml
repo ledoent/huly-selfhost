@@ -2,15 +2,14 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
   labels:
     app: swagger-ui
   name: swagger-ui
 spec:
   ingressClassName: nginx
   rules:
-    - host: huly.example
+    - host: huly.hz.ledoweb.com
       http:
         paths:
           - backend:
@@ -18,5 +17,9 @@ spec:
                 name: swagger-ui
                 port:
                   number: 80
-            path: /_api-docs(/|$)(.*)
-            pathType: ImplementationSpecific
+            path: /_api-docs
+            pathType: Prefix
+  tls:
+    - hosts:
+        - huly.hz.ledoweb.com
+      secretName: huly-tls

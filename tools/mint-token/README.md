@@ -30,11 +30,12 @@ Query CockroachDB to find account and workspace UUIDs:
 ```bash
 # Workspace UUID (from workspace URL slug)
 kubectl exec -n huly <cockroach-pod> -- cockroach sql --insecure \
-  -e "SELECT uuid FROM workspace WHERE url = 'my-workspace'"
+  -e "SELECT uuid FROM global_account.workspace WHERE url = 'my-workspace'"
 
 # Account UUID (from user email)
 kubectl exec -n huly <cockroach-pod> -- cockroach sql --insecure \
-  -e "SELECT p.uuid FROM social_id si JOIN person p ON si.\"personUuid\" = p.uuid
+  -e "SELECT p.uuid FROM global_account.social_id si
+      JOIN global_account.person p ON si.person_uuid = p.uuid
       WHERE si.value = 'user@example.com' AND si.type = 'email'"
 ```
 
