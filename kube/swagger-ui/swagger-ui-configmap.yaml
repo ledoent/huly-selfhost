@@ -1,0 +1,23 @@
+# Do NOT apply this file directly — it's a placeholder.
+#
+# Generate the ConfigMap from the canonical spec at deploy time:
+#
+#   kubectl create configmap openapi-spec \
+#     --from-file=openapi.yaml=docs/openapi.yaml \
+#     --dry-run=client -o yaml | kubectl apply -n <namespace> -f -
+#
+# Or with kustomize, add a configMapGenerator:
+#
+#   configMapGenerator:
+#     - name: openapi-spec
+#       files:
+#         - openapi.yaml=../../docs/openapi.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openapi-spec
+  labels:
+    app: swagger-ui
+data:
+  openapi.yaml: "# Replace: see comment above"

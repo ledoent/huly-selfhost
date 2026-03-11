@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  labels:
+    app: token-service
+  name: token-service
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: huly.example
+      http:
+        paths:
+          - backend:
+              service:
+                name: token-service
+                port:
+                  number: 80
+            path: /_tokens
+            pathType: Prefix

@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: swagger-ui
+  name: swagger-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: swagger-ui
+  template:
+    metadata:
+      labels:
+        app: swagger-ui
+    spec:
+      containers:
+        - name: swagger-ui
+          image: swaggerapi/swagger-ui:v5.18.2
+          env:
+            - name: SWAGGER_JSON
+              value: /spec/openapi.yaml
+            - name: BASE_URL
+              value: /_api-docs
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              memory: 64Mi
+            requests:
+              memory: 32Mi
+          volumeMounts:
+            - name: openapi-spec
+              mountPath: /spec
+              readOnly: true
+      volumes:
+        - name: openapi-spec
+          configMap:
+            name: openapi-spec
+      restartPolicy: Always

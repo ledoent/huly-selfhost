@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: token-service
+  name: token-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: token-service
+  template:
+    metadata:
+      labels:
+        app: token-service
+    spec:
+      containers:
+        - env:
+            - name: SERVER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: huly-secret
+                  key: SERVER_SECRET
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: huly-secret
+                  key: CR_DB_URL
+            - name: PORT
+              value: "3500"
+          image: ghcr.io/ledoent/huly-token-service:latest
+          name: token-service
+          ports:
+            - containerPort: 3500
+              protocol: TCP
+          resources:
+            limits:
+              memory: 128Mi
+            requests:
+              memory: 64Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3500
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3500
+            initialDelaySeconds: 3
+            periodSeconds: 10
+      restartPolicy: Always
