@@ -107,6 +107,18 @@ appSettings:
   desktopChannel: "selfhost"
 
 # ──────────────────────────────────────────────────────────────
+# Observability — OpenTelemetry trace export
+# ──────────────────────────────────────────────────────────────
+observability:
+  # Set to enable OTLP trace export from Huly services.
+  # Example: http://openobserve.openobserve.svc:5080/api/default
+  otlpEndpoint: ""
+  # Extra headers for OTLP exporter (e.g. auth).
+  # Format: "Header1=Value1,Header2=Value2"
+  # Example: "Authorization=Basic dXNlcjpwYXNz"
+  otlpHeaders: ""
+
+# ──────────────────────────────────────────────────────────────
 # Global pod settings (applied to all services)
 # ──────────────────────────────────────────────────────────────
 global:
@@ -209,6 +221,11 @@ workspace:
 
 fulltext:
   replicas: 1
+  # Search backend: "elastic" (default), "opensearch", or "typesense"
+  backend: ""
+  # Override FULLTEXT_DB_URL (defaults to ELASTIC_URL).
+  # Required for typesense: e.g. "http://typesense:8108?apiKey=xyz"
+  dbUrl: ""
   resources:
     limits:
       memory: 512Mi

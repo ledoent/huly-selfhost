@@ -53,6 +53,13 @@ data:
   GITHUB_URL: "{{ $proto }}://{{ .Values.domain }}/_github"
   {{- end }}
 
+  {{- if .Values.observability.otlpEndpoint }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.observability.otlpEndpoint | quote }}
+  {{- end }}
+  {{- if .Values.observability.otlpHeaders }}
+  OTEL_EXPORTER_OTLP_HEADERS: {{ .Values.observability.otlpHeaders | quote }}
+  {{- end }}
+
   {{- if .Values.aibot.enabled }}
   AI_URL: "{{ $proto }}://{{ .Values.domain }}/_aibot"
   AI_BOT_URL: "http://aibot:4010"
