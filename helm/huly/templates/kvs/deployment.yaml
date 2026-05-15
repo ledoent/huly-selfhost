@@ -30,6 +30,10 @@ spec:
             - name: http
               containerPort: 8094
           env:
+            # hulylake (v0.7.423+) defaults to 8096; pin to 8094 to keep the
+            # service port stable across the old hulykvs → new hulylake bump.
+            - name: HULY_BIND_PORT
+              value: "8094"
             {{- include "huly.envSecret" (dict "name" "HULY_DB_CONNECTION" "key" "CR_DB_URL" "root" .) | nindent 12 }}
             {{- include "huly.envSecret" (dict "name" "HULY_TOKEN_SECRET" "key" "SERVER_SECRET" "root" .) | nindent 12 }}
             {{- /*
