@@ -229,6 +229,12 @@ kvs:
   enabled: true
   replicas: 1
   resources: {}
+  # hulylake (the engine inside hulykvs) stores blobs in S3 from v0.7.423 on.
+  # When storage.type=s3 the chart wires the main storage credentials in as
+  # AWS_REGION / AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY / AWS_ENDPOINT_URL_S3.
+  # `bucket` is the dedicated hulylake bucket — must exist on the S3 endpoint.
+  s3:
+    bucket: hulylake
 
 githubIntegration:
   # GitHub App integration — syncs issues, PRs, and comments with GitHub
