@@ -1,0 +1,16 @@
+{{- if .Values.analyticsCollector.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: analytics-collector
+  labels:
+    {{- include "huly.labels" . | nindent 4 }}
+    app.kubernetes.io/name: analytics-collector
+spec:
+  selector:
+    app.kubernetes.io/name: analytics-collector
+  ports:
+    - name: http
+      port: 4017
+      targetPort: 4017
+{{- end }}

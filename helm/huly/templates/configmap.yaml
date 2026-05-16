@@ -19,6 +19,10 @@ data:
   REKONI_URL: "{{ $proto }}://{{ .Values.domain }}/_rekoni"
   STATS_URL: "{{ $proto }}://{{ .Values.domain }}/_stats"
   TRANSACTOR_URL: "ws://transactor:3333;{{ $wsProto }}://{{ .Values.domain }}/_transactor"
+  {{- if .Values.analyticsCollector.enabled }}
+  ANALYTICS_COLLECTOR_URL: "{{ $proto }}://{{ .Values.domain }}/_analytics"
+  ANALYTICS_COLLECTOR_URL_INTERNAL: "http://analytics-collector:4017"
+  {{- end }}
 
   # Internal URLs (pod-to-pod)
   ELASTIC_URL: {{ $elasticUrl | quote }}

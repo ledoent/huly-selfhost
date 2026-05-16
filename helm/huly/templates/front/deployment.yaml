@@ -36,6 +36,9 @@ spec:
             {{- include "huly.envConfig" (dict "name" "REKONI_URL" "key" "REKONI_URL" "root" .) | nindent 12 }}
             {{- include "huly.envConfig" (dict "name" "ELASTIC_URL" "key" "ELASTIC_URL" "root" .) | nindent 12 }}
             {{- include "huly.envConfig" (dict "name" "STATS_URL" "key" "STATS_URL" "root" .) | nindent 12 }}
+            {{- if .Values.analyticsCollector.enabled }}
+            {{- include "huly.envConfig" (dict "name" "ANALYTICS_COLLECTOR_URL" "key" "ANALYTICS_COLLECTOR_URL" "root" .) | nindent 12 }}
+            {{- end }}
             {{- include "huly.envConfig" (dict "name" "DEFAULT_LANGUAGE" "key" "DEFAULT_LANGUAGE" "root" .) | nindent 12 }}
             {{- include "huly.envConfig" (dict "name" "TITLE" "key" "TITLE" "root" .) | nindent 12 }}
             {{- include "huly.envConfig" (dict "name" "UPLOAD_URL" "key" "UPLOAD_URL" "root" .) | nindent 12 }}
