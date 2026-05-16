@@ -252,6 +252,33 @@ githubIntegration:
     limits:
       memory: 512Mi
 
+analyticsCollector:
+  # Frontend error/event collector. The hardcoreeng/analytics-collector image
+  # receives browser window.error + unhandledrejection events from the front
+  # bundle (via window.fetch to /_analytics/collect) and forwards to OTEL +
+  # optional PostHog. Wired to OTEL via the openobserve-otlp secret in the
+  # cluster — set OTEL_EXPORTER_OTLP_ENDPOINT/HEADERS in your override values
+  # if you want a different sink.
+  enabled: true
+  image: hardcoreeng/analytics-collector
+  # Defaults to the upstream public tag — the analytics-collector image
+  # is usually not part of forked/private builds, so it intentionally does
+  # not inherit hulyVersion. Override per-environment in values-*.yaml.
+  tag: "v0.7.382"
+  replicas: 1
+  # OTEL secret reference (must exist in the namespace). Set both keys to
+  # empty strings to disable OTEL forwarding.
+  otelSecret:
+    name: openobserve-otlp
+    endpointKey: OTEL_EXPORTER_OTLP_ENDPOINT
+    headersKey: OTEL_EXPORTER_OTLP_HEADERS
+  resources:
+    limits:
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
 aibot:
   # AI bot service — requires OpenAI API key
   enabled: false

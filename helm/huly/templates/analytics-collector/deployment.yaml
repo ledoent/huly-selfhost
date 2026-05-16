@@ -1,0 +1,63 @@
+{{- if .Values.analyticsCollector.enabled }}
+{{- $tag := .Values.analyticsCollector.tag }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics-collector
+  labels:
+    {{- include "huly.labels" . | nindent 4 }}
+    app.kubernetes.io/name: analytics-collector
+spec:
+  replicas: {{ .Values.analyticsCollector.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: analytics-collector
+  template:
+    metadata:
+      annotations:
+        {{- include "huly.checksumAnnotations" . | nindent 8 }}
+      labels:
+        {{- include "huly.labels" . | nindent 8 }}
+        app.kubernetes.io/name: analytics-collector
+    spec:
+      {{- include "huly.scheduling" . | nindent 6 }}
+      containers:
+        - name: analytics-collector
+          image: {{ .Values.analyticsCollector.image }}:{{ $tag }}
+          ports:
+            - name: http
+              containerPort: 4017
+          env:
+            - name: PORT
+              value: "4017"
+            - name: SERVICE_ID
+              value: analytics-collector-service
+            {{- include "huly.envSecret" (dict "name" "SECRET" "key" "SERVER_SECRET" "root" .) | nindent 12 }}
+            {{- include "huly.envConfig" (dict "name" "ACCOUNTS_URL" "key" "ACCOUNTS_URL_INTERNAL" "root" .) | nindent 12 }}
+            {{- include "huly.envConfig" (dict "name" "STATS_URL" "key" "STATS_URL_INTERNAL" "root" .) | nindent 12 }}
+            {{- with .Values.analyticsCollector.otelSecret }}
+            {{- if and .name .endpointKey }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .name }}
+                  key: {{ .endpointKey }}
+            {{- end }}
+            {{- if and .name .headersKey }}
+            - name: OTEL_EXPORTER_OTLP_HEADERS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .name }}
+                  key: {{ .headersKey }}
+            {{- end }}
+            {{- end }}
+          readinessProbe:
+            tcpSocket:
+              port: 4017
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          {{- with .Values.analyticsCollector.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}
