@@ -194,6 +194,10 @@ account:
 transactor:
   replicas: 1
   resources: {}
+  # Override the image registry/tag for transactor only (useful for hot-fix builds).
+  # When unset, falls back to .Values.hulyRegistry / .Values.hulyVersion.
+  registry: ""   # e.g. europe-west3-docker.pkg.dev/kendall-ledo/docker/huly
+  version: ""    # e.g. v0.7.423-jsonb2
 
 collaborator:
   replicas: 1
