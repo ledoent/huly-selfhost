@@ -30,8 +30,20 @@ spec:
             - name: http
               containerPort: 8094
           env:
+            - name: HULY_BIND_PORT
+              value: "8094"
             {{- include "huly.envSecret" (dict "name" "HULY_DB_CONNECTION" "key" "CR_DB_URL" "root" .) | nindent 12 }}
             {{- include "huly.envSecret" (dict "name" "HULY_TOKEN_SECRET" "key" "SERVER_SECRET" "root" .) | nindent 12 }}
+            {{- if eq .Values.storage.type "s3" }}
+            - name: HULY_S3_BUCKET
+              value: {{ .Values.kvs.s3Bucket | default "hulylake" | quote }}
+            - name: AWS_REGION
+              value: {{ .Values.storage.s3.region | quote }}
+            - name: AWS_ENDPOINT_URL_S3
+              value: {{ .Values.storage.s3.endpoint | quote }}
+            {{- include "huly.envSecret" (dict "name" "AWS_ACCESS_KEY_ID" "key" "S3_ACCESS_KEY" "root" .) | nindent 12 }}
+            {{- include "huly.envSecret" (dict "name" "AWS_SECRET_ACCESS_KEY" "key" "S3_SECRET_KEY" "root" .) | nindent 12 }}
+            {{- end }}
           readinessProbe:
             tcpSocket:
               port: 8094
