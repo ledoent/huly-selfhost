@@ -144,7 +144,7 @@ redpanda:
 
 elastic:
   enabled: true
-  image: elasticsearch:7.14.2
+  image: elasticsearch:7.17.28
   storage: 10Gi
   storageClassName: ""
   javaOpts: "-Xms1024m -Xmx1024m"
