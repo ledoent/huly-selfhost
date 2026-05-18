@@ -32,12 +32,21 @@ spec:
             {{- include "huly.envSecret" (dict "name" "SERVER_SECRET" "key" "SERVER_SECRET" "root" .) | nindent 12 }}
             {{- include "huly.envSecret" (dict "name" "DB_URL" "key" "CR_DB_URL" "root" .) | nindent 12 }}
             {{- include "huly.envSecret" (dict "name" "STORAGE_CONFIG" "key" "STORAGE_CONFIG" "root" .) | nindent 12 }}
+            {{- if .Values.fulltext.dbUrl }}
+            - name: FULLTEXT_DB_URL
+              value: {{ .Values.fulltext.dbUrl | quote }}
+            {{- else }}
             {{- include "huly.envConfig" (dict "name" "FULLTEXT_DB_URL" "key" "ELASTIC_URL" "root" .) | nindent 12 }}
+            {{- end }}
             {{- include "huly.envConfig" (dict "name" "ELASTIC_INDEX_NAME" "key" "ELASTIC_INDEX_NAME" "root" .) | nindent 12 }}
             {{- include "huly.envConfig" (dict "name" "REKONI_URL" "key" "REKONI_URL_INTERNAL" "root" .) | nindent 12 }}
             {{- include "huly.envConfig" (dict "name" "ACCOUNTS_URL" "key" "ACCOUNTS_URL_INTERNAL" "root" .) | nindent 12 }}
             {{- include "huly.envConfig" (dict "name" "STATS_URL" "key" "STATS_URL_INTERNAL" "root" .) | nindent 12 }}
             {{- include "huly.envConfig" (dict "name" "QUEUE_CONFIG" "key" "QUEUE_CONFIG" "root" .) | nindent 12 }}
+            {{- if .Values.fulltext.backend }}
+            - name: FULLTEXT_BACKEND
+              value: {{ .Values.fulltext.backend | quote }}
+            {{- end }}
           readinessProbe:
             tcpSocket:
               port: 4700
